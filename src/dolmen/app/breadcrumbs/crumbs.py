@@ -9,7 +9,7 @@ from zope.component import getMultiAdapter
 class Breadcrumbs(grok.Viewlet):
     grok.context(Interface)
     grok.name('dolmen.breadcrumbs')
-    grok.viewletmanager(master.DolmenTop)
+    grok.viewletmanager(master.Top)
     grok.order(30)
 
     def update(self):
