@@ -4,6 +4,10 @@
 
   <include package="grokcore.view" file="meta.zcml" />
   <include package="grokcore.viewlet" file="meta.zcml" />
+
+  <include package="grokcore.view" />
+  <include package="grokcore.viewlet" />
+  <include package="dolmen.app.layout" />
   <grok:grok package="." />
 
 </configure>
