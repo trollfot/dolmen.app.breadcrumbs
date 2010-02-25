@@ -2,27 +2,34 @@ from setuptools import setup, find_packages
 from os.path import join
 
 name = 'dolmen.app.breadcrumbs'
-version = '0.1'
+version = '0.2'
 readme = open(join('src', 'dolmen', 'app', 'breadcrumbs', 'README.txt')).read()
 history = open(join('docs', 'HISTORY.txt')).read()
 
 install_requires = [
     'dolmen.app.layout',
-    'dolmen.content',
-    'grokcore.view',
+    'grokcore.component',
     'grokcore.viewlet',
     'setuptools',
     'zope.component',
     'zope.interface',
     'zope.proxy',
     'zope.traversing',
+    'zope.location',
+    'zope.publisher',
+    'zope.dublincore',
     ]
 
-tests_require = install_requires + [
-    'zope.app.security',
-    'zope.app.testing',
-    'zope.app.zcmlfiles',
+tests_require = [
+    'dolmen.content',
+    'grokcore.view',
+    'zope.annotation',
+    'zope.container',
+    'zope.i18n',
+    'zope.security',
+    'zope.site',
     'zope.testing',
+    'zope.traversing',
     ]
 
 setup(name = name,

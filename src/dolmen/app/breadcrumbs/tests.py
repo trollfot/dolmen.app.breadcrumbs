@@ -1,28 +1,50 @@
 # -*- coding: utf-8 -*-
 
-import os.path
 import unittest
+import zope.component
+import dolmen.app.breadcrumbs
 
-from zope.testing import doctest, module
-from zope.app.testing import functional
+from zope.component import eventtesting
+from zope.component.interfaces import IComponentLookup
+from zope.component.testlayer import ZCMLFileLayer
+from zope.interface import Interface
+from zope.site.folder import rootFolder
+from zope.site.site import LocalSiteManager, SiteManagerAdapter
+from zope.testing import doctest
+from zope.traversing.testing import setUp as traversingSetUp
 
-ftesting_zcml = os.path.join(os.path.dirname(__file__), 'ftesting.zcml')
-FunctionalLayer = functional.ZCMLLayer(
-    ftesting_zcml, __name__, 'FunctionalLayer', allow_teardown=True
-    )
 
+class BreadcrumbTestLayer(ZCMLFileLayer):
+    """The dolmen.app.breadcrumbs main test layer.
+    """
 
-def setUp(test):
-    module.setUp(test, 'dolmen.app.breadcrumbs.ftests')
+    def setUp(self):
+        ZCMLFileLayer.setUp(self)
+        eventtesting.setUp()
+        traversingSetUp()
 
-def tearDown(test):
-    module.tearDown(test)
+        # Set up site manager adapter
+        zope.component.provideAdapter(
+            SiteManagerAdapter, (Interface,), IComponentLookup)
+
+        # Set up site
+        site = rootFolder()
+        site.setSiteManager(LocalSiteManager(site))
+        zope.component.hooks.setSite(site)
+
+        return site
+
+    def tearDown(self):
+        ZCMLFileLayer.tearDown(self)
+        zope.component.hooks.resetHooks()
+        zope.component.hooks.setSite()
+
 
 def test_suite():
     suite = unittest.TestSuite()
-    readme = functional.FunctionalDocFileSuite(
-        'README.txt', setUp=setUp, tearDown=tearDown,
-        )
-    readme.layer = FunctionalLayer
+    readme = doctest.DocFileSuite(
+        'README.txt',
+        optionflags=(doctest.ELLIPSIS + doctest.NORMALIZE_WHITESPACE))
+    readme.layer = BreadcrumbTestLayer(dolmen.app.breadcrumbs)
     suite.addTest(readme)
     return suite

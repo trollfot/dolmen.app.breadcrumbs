@@ -23,7 +23,9 @@ only for IBaseContent objects::
 
 We now create our contents in an hypothetical application::
 
-  >>> app = getRootFolder()
+  >>> from zope.component.hooks import getSite
+
+  >>> app = getSite()
   >>> app['cave'] = Container()
   >>> app['cave']['pot'] = Container()
 
@@ -41,21 +43,47 @@ display something::
   True
 
 
+Adapting
+========
+
+The component that allows to build URLs and Breadcrumbs is a multi
+adapter providing the IAbsoluteUrl interface. let's have a closer
+look::
+
+  >>> from zope.component import getMultiAdapter
+  >>> from zope.publisher.browser import TestRequest
+  >>> from zope.traversing.browser.interfaces import IAbsoluteURL
+
+  >>> request = TestRequest()
+  >>> url = getMultiAdapter((app['cave'], request), IAbsoluteURL)
+
+  >>> url
+  <dolmen.app.breadcrumbs.url.DescriptiveAbsoluteURL object at ...>
+
+  >>> from zope.interface.verify import verifyObject
+  >>> verifyObject(IAbsoluteURL, url)
+  True
+
+  >>> url()
+  'http://127.0.0.1/cave'
+
+  >>> url.breadcrumbs()
+  ({'url': 'http://127.0.0.1', 'name': ''},
+   {'url': 'http://127.0.0.1/cave', 'name': u'cave'})
+
+
 Rendering
 ========= 
 
 Now, we have some contents in our application. We can call our view
 and render the viewlet using its manager. 
 
-  >>> from dolmen.app.breadcrumbs import Breadcrumbs
   >>> from dolmen.app.layout import master
-  >>> from zope.component import getMultiAdapter
-  >>> from zope.publisher.browser import TestRequest
+  >>> from dolmen.app.breadcrumbs import Breadcrumbs
 
-  >>> request = TestRequest()
   >>> view = getMultiAdapter((app['cave'], request), name="simpleview")
   >>> view
-  <dolmen.app.breadcrumbs.ftests.simpleView object at ...>
+  <simpleView object at ...>
 
 
 The Breadcrumbs viewlet is registered for the `dolmen.app.layout.Top`
@@ -95,9 +123,9 @@ It works with all kind of objects although the title will only be used
 for objects providing `dolmen.content.IBaseContent`::
 
   >>> app['cave']['pot']['bone'] = object()
+  >>> bone = app['cave']['pot']['bone']
+  >>> viewlet = Breadcrumbs(bone, request, view, manager)
 
-  >>> viewlet = Breadcrumbs(
-  ...    app['cave']['pot']['bone'], request, view, manager)
   >>> viewlet.update()
   >>> print viewlet.render()
   <div id="breadcrumb">
