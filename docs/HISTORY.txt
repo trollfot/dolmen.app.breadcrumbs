@@ -1,6 +1,14 @@
 Changelog
 =========
 
+1.0b1 (2010-07-08)
+------------------
+
+* Tests no longer use `IBaseContent` from ``dolmen.content``.
+
+* Added translations (French).
+
+
 0.2 (2010-02-26)
 ----------------
 
