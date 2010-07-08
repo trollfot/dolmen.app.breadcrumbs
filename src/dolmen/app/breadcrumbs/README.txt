@@ -8,21 +8,12 @@ Dolmen applications. It registers a viewlet to render the links.
 Getting started
 ===============
 
-To test the breadcrumbs' features, we need to create some content. We
-used here `dolmen.content` contents, as our breadcrumbs' behavior works
-only for IBaseContent objects::
-
-  >>> import dolmen.content
   >>> from grokcore.component import testing
 
-  >>> class Container(dolmen.content.Container):
-  ...    dolmen.content.name('A dummy container')
+To test the breadcrumbs' features, we need to create some content in
+an hypothetical application::
 
-  >>> testing.grok_component('container', Container)
-  True
-
-We now create our contents in an hypothetical application::
-
+  >>> from grokcore.content import Container
   >>> from zope.component.hooks import getSite
 
   >>> app = getSite()
@@ -33,9 +24,10 @@ To finish, we create a view. As we use a viewlet, we need a view to
 display something::
 
   >>> import grokcore.view
+  >>> from zope.interface import Interface
 
   >>> class simpleView(grokcore.view.View):
-  ...   grokcore.view.context(dolmen.content.IBaseContent)
+  ...   grokcore.view.context(Interface)
   ...   def render(self):
   ...     return u'For test purposes'
 
@@ -71,6 +63,14 @@ look::
   ({'url': 'http://127.0.0.1', 'name': ''},
    {'url': 'http://127.0.0.1/cave', 'name': u'cave'})
 
+The breadcrumbs uses the ``zope.dublincore`` interface,
+`IDCDescriptiveProperties`, in order to get the renderable title::
+
+  >>> from zope.dublincore.interfaces import IDCDescriptiveProperties
+  >>> adapter = IDCDescriptiveProperties(app['cave'])
+  >>> adapter.title
+  u''
+
 
 Rendering
 ========= 
@@ -100,7 +100,7 @@ location in the parent (`__name__`)::
   >>> viewlet.update()
   >>> print viewlet.render()
   <div id="breadcrumb">
-    <span class="you-are-here">You are here:</span>
+    <span class="you-are-here">You are here :</span>
     <span class="crumb">
       <a href="http://127.0.0.1/cave">cave</a>
     </span>
@@ -108,19 +108,20 @@ location in the parent (`__name__`)::
 
 If we set a title, it uses the title::
 
-  >>> app['cave'].title = u"My cave with a fireplace"
+  >>> adapter = IDCDescriptiveProperties(app['cave'])
+  >>> adapter.title = u'My cave with a fireplace'
 
   >>> viewlet.update() 
   >>> print viewlet.render()
   <div id="breadcrumb">
-    <span class="you-are-here">You are here:</span>
+    <span class="you-are-here">You are here :</span>
     <span class="crumb">
       <a href="http://127.0.0.1/cave">My cave with a fireplace</a>
     </span>
   </div>
 
-It works with all kind of objects although the title will only be used
-for objects providing `dolmen.content.IBaseContent`::
+It works with all kind of objects, even if their metadata title is not
+set::
 
   >>> app['cave']['pot']['bone'] = object()
   >>> bone = app['cave']['pot']['bone']
@@ -129,7 +130,7 @@ for objects providing `dolmen.content.IBaseContent`::
   >>> viewlet.update()
   >>> print viewlet.render()
   <div id="breadcrumb">
-    <span class="you-are-here">You are here:</span>
+    <span class="you-are-here">You are here :</span>
     <span class="crumb">
       <a href="http://127.0.0.1/cave">My cave with a fireplace</a>
       <span class="breadcrumb-separator">&rarr;</span>

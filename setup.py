@@ -12,16 +12,16 @@ install_requires = [
     'grokcore.viewlet',
     'setuptools',
     'zope.component',
-    'zope.interface',
-    'zope.proxy',
-    'zope.traversing',
-    'zope.location',
-    'zope.publisher',
     'zope.dublincore',
+    'zope.interface',
+    'zope.location',
+    'zope.proxy',
+    'zope.publisher',
+    'zope.traversing',
     ]
 
 tests_require = [
-    'dolmen.content',
+    'grokcore.content',
     'grokcore.view',
     'zope.annotation',
     'zope.container',
