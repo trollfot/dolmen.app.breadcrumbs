@@ -58,6 +58,20 @@ Siblings, for I am his kinsman !
    {'url': 'http://localhost/app/Duncan/Malcolm%20Heir%20of%20the%20Realm', 'name': 'Malcolm Heir of the Realm'}]
 
 
+What if...
+==========
+
+... thou have no name ?
+
+  >>> anonymous = Location()
+  >>> anonymous.__parent__ = root
+
+  >>> print list(breadcrumbs(anonymous, request)) # doctest: +ELLIPSIS
+  Traceback (most recent call last):
+  ...
+  KeyError: 'Object name (<...Location object...>) could not be resolved.'
+
+
 Who art thou ?
 ==============
 
@@ -84,15 +98,24 @@ Who art thou ?
    {'url': 'http://localhost/app/lady/thane', 'name': 'McBeth'}]
 
 
-What if...
-==========
+Show me !
+=========
 
-... thou have no name ?
-
-  >>> anonymous = Location()
-  >>> anonymous.__parent__ = root
-
-  >>> print list(breadcrumbs(anonymous, request)) # doctest: +ELLIPSIS
-  Traceback (most recent call last):
-  ...
-  KeyError: 'Object name (<...Location object...>) could not be resolved.'
+  >>> from dolmen.app.breadcrumbs import BreadcrumbsRenderer
+  >>> renderer = BreadcrumbsRenderer(thane, request)
+  >>> renderer.update()
+  >>> print renderer.render()  # doctest: +NORMALIZE_WHITESPACE
+  <div id="breadcrumb">
+    <span class="you-are-here">You are here :</span>
+    <span class="crumb">
+      <a href="http://localhost/app">Bob</a>
+      <span class="breadcrumb-separator">&rarr;</span>
+    </span>
+    <span class="crumb">
+      <a href="http://localhost/app/lady">lady</a>
+      <span class="breadcrumb-separator">&rarr;</span>
+    </span>
+    <span class="crumb">
+      <a href="http://localhost/app/lady/thane">McBeth</a>
+    </span>
+  </div>
