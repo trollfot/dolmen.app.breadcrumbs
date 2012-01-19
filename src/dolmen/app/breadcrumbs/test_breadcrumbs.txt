@@ -1,0 +1,98 @@
+Getting started
+===============
+
+  >>> from grokcore.component import testing
+  >>> testing.grok('dolmen.location')
+
+We need to provide a root::
+
+  >>> from zope.location import Location
+  >>> from cromlech.io import IPublicationRoot
+  >>> from zope.interface import directlyProvides
+
+  >>> root = Location()
+  >>> directlyProvides(root, IPublicationRoot)
+
+
+  >>> from cromlech.browser.testing import TestHTTPRequest
+  >>> request = TestHTTPRequest()
+
+Now, we should basically get a result here:
+
+  >>> from dolmen.app.breadcrumbs import breadcrumbs
+  >>> print list(breadcrumbs(root, request))
+  [{'url': 'http://localhost', 'name': None}]
+
+If there's an application URL that meeses up with our base url, it should
+be reflected::
+
+  >>> request = TestHTTPRequest(application_url='http://localhost/app')
+  >>> print list(breadcrumbs(root, request))
+  [{'url': 'http://localhost/app', 'name': None}]
+
+If the item gets a name, it should be reflected also::
+
+  >>> root.__name__ = 'Bob'
+  >>> print list(breadcrumbs(root, request))
+  [{'url': 'http://localhost/app', 'name': 'Bob'}]
+
+
+Siblings, for I am his kinsman !
+================================
+
+  >>> from zope.location import locate
+  >>> duncan = Location()
+  >>> locate(duncan, root, 'Duncan')
+
+  >>> print list(breadcrumbs(duncan, request))
+  ... # doctest: +NORMALIZE_WHITESPACE
+  [{'url': 'http://localhost/app', 'name': 'Bob'},
+   {'url': 'http://localhost/app/Duncan', 'name': 'Duncan'}]
+
+  >>> malcolm = Location()
+  >>> locate(malcolm, duncan, 'Malcolm Heir of the Realm')
+  >>> print list(breadcrumbs(malcolm, request))
+  ... # doctest: +NORMALIZE_WHITESPACE
+  [{'url': 'http://localhost/app', 'name': 'Bob'},
+   {'url': 'http://localhost/app/Duncan', 'name': 'Duncan'},
+   {'url': 'http://localhost/app/Duncan/Malcolm%20Heir%20of%20the%20Realm', 'name': 'Malcolm Heir of the Realm'}]
+
+
+Who art thou ?
+==============
+
+  >>> from zope.dublincore.interfaces import IDCDescriptiveProperties
+  >>> from zope.interface import implements
+
+  >>> class DescriptiveLocation(Location):
+  ...    implements(IDCDescriptiveProperties)
+  ...
+  ...    def __init__(self, title="", description="", *args, **kws):
+  ...        self.title = title
+  ...        self.description = description
+  ...        Location.__init__(self, *args, **kws)
+
+  >>> lady = Location()
+  >>> locate(lady, root, 'lady')
+  >>> thane = DescriptiveLocation(title='McBeth')
+  >>> locate(thane, lady, 'thane')
+
+  >>> print list(breadcrumbs(thane, request))
+  ... # doctest: +NORMALIZE_WHITESPACE
+  [{'url': 'http://localhost/app', 'name': 'Bob'},
+   {'url': 'http://localhost/app/lady', 'name': 'lady'},
+   {'url': 'http://localhost/app/lady/thane', 'name': 'McBeth'}]
+
+
+What if...
+==========
+
+... thou have no name ?
+
+  >>> anonymous = Location()
+  >>> anonymous.__parent__ = root
+
+  >>> print list(breadcrumbs(anonymous, request)) # doctest: +ELLIPSIS
+  Traceback (most recent call last):
+  ...
+  KeyError: 'Object name (<...Location object...>) could not be resolved.'

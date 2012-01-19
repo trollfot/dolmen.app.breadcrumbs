@@ -2,34 +2,24 @@ from setuptools import setup, find_packages
 from os.path import join
 
 name = 'dolmen.app.breadcrumbs'
-version = '1.0b1'
+version = '2.0'
 readme = open(join('src', 'dolmen', 'app', 'breadcrumbs', 'README.txt')).read()
 history = open(join('docs', 'HISTORY.txt')).read()
 
 install_requires = [
-    'dolmen.app.layout',
     'grokcore.component',
-    'grokcore.viewlet',
+    'dolmen.viewlet',
     'setuptools',
+    'dolmen.location >= 0.1',
     'zope.component',
     'zope.dublincore',
     'zope.interface',
     'zope.location',
     'zope.proxy',
-    'zope.publisher',
-    'zope.traversing',
     ]
 
 tests_require = [
-    'grokcore.content',
-    'grokcore.view',
-    'zope.annotation',
-    'zope.container',
-    'zope.i18n',
-    'zope.security',
-    'zope.site',
-    'zope.testing',
-    'zope.traversing',
+    'cromlech.browser [test] >= 0.4'
     ]
 
 setup(name = name,
@@ -41,7 +31,7 @@ setup(name = name,
       author_email = 'trollfot@gmail.com',
       url = 'http://gitweb.dolmen-project.org',
       download_url = '',
-      license = 'GPL',
+      license = 'ZPL',
       packages=find_packages('src', exclude=['ez_setup']),
       package_dir={'': 'src'},
       namespace_packages = ['dolmen', 'dolmen.app'],
@@ -54,10 +44,9 @@ setup(name = name,
       classifiers = [
         'Development Status :: 4 - Beta',
         'Environment :: Web Environment',
-        'Framework :: Zope3',
         'Intended Audience :: Other Audience',
-        'License :: OSI Approved :: GNU General Public License (GPL)',
+        'License :: OSI Approved :: Zope Public License (GPL)',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
       ],
-)
+      )
