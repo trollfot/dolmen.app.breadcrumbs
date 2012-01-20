@@ -13,6 +13,7 @@ We need to provide a root::
   >>> root = Location()
   >>> directlyProvides(root, IPublicationRoot)
 
+We also need a request, to compute the URLs::
 
   >>> from cromlech.browser.testing import TestHTTPRequest
   >>> request = TestHTTPRequest()
@@ -105,15 +106,15 @@ Show me !
   >>> renderer = BreadcrumbsRenderer(thane, request)
   >>> renderer.update()
   >>> print renderer.render()  # doctest: +NORMALIZE_WHITESPACE
-  <div id="breadcrumb">
+  <div class="breadcrumb">
     <span class="you-are-here">You are here :</span>
     <span class="crumb">
       <a href="http://localhost/app">Bob</a>
-      <span class="breadcrumb-separator">&rarr;</span>
+      <span class="divider">&rarr;</span>
     </span>
     <span class="crumb">
       <a href="http://localhost/app/lady">lady</a>
-      <span class="breadcrumb-separator">&rarr;</span>
+      <span class="divider">&rarr;</span>
     </span>
     <span class="crumb">
       <a href="http://localhost/app/lady/thane">McBeth</a>
