@@ -1,4 +1,4 @@
-<div id="breadcrumb" i18n:domain="dolmen.app.breadcrumbs">
+<div class="breadcrumb" i18n:domain="dolmen.app.breadcrumbs">
   <span class="you-are-here" i18n:translate="">You are here :</span>
   <tal:loop repeat="crumb breadcrumbs">
   <span class="crumb" tal:condition="crumb['name']">
@@ -6,7 +6,7 @@
        tal:attributes="href crumb['url']"
        tal:content="crumb['name']">name</a>
     <span tal:condition="not: repeat['crumb'].end"
-	  class="breadcrumb-separator" tal:content="structure separator" />
+	  class="divider" tal:content="structure separator" />
   </span>
   </tal:loop>
 </div>

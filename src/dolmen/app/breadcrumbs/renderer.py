@@ -26,7 +26,7 @@ class BreadcrumbsRenderer(object):
         return {}
 
     def update(self):
-        self.breadcrumbs = breadcrumbs(self.context, self.request)
+        self.breadcrumbs = list(breadcrumbs(self.context, self.request))
     
     def render(self):
         return render_breadcrumbs(self, self.breadcrumbs)
